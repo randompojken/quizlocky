@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>QuizLocky — Earn Your Screen Time</title>
+<meta name="description" content="QuizLocky locks the apps that distract you until you study. Paste your notes, Locky's AI builds a quiz, and you unlock your phone by learning. Turn screen time into study time." />
+
+<!-- Open Graph / social preview -->
+<meta property="og:title" content="QuizLocky — Earn Your Screen Time" />
+<meta property="og:description" content="Lock the apps that distract you until you study. AI quizzes from your own notes. Available on iOS." />
+<meta property="og:type" content="website" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<!-- Favicon: tiny padlock -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect x='22' y='45' width='56' height='44' rx='12' fill='%235C6BF5'/><path d='M33 45 V34 a17 17 0 0 1 34 0 V45' fill='none' stroke='%23161A3A' stroke-width='9'/></svg>" />
+
+<style>
+  :root{
+    --paper:#FAF8F3;
+    --paper-2:#F2EEE4;
+    --ink:#14152A;
+    --ink-soft:#53566F;
+    --peri:#5C6BF5;
+    --peri-deep:#4351E0;
+    --peri-soft:#E9EBFE;
+    --amber:#FFB020;
+    --navy:#13162F;
+    --success:#27C06B;
+    --line:#E7E2D6;
+    --radius:22px;
+    --shadow-soft:0 18px 50px -24px rgba(20,21,42,.35);
+    --shadow-card:0 10px 36px -20px rgba(20,21,42,.30);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:"Hanken Grotesk",system-ui,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* subtle paper grain */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  h1,h2,h3,.display{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;line-height:1.02;letter-spacing:-.02em;}
+  a{color:inherit;text-decoration:none;}
+  .wrap{width:min(1180px,92vw);margin:0 auto;}
+  .accent{color:var(--peri);}
+
+  /* ---------- buttons ---------- */
+  .btn{display:inline-flex;align-items:center;gap:.55rem;font-weight:700;font-size:1rem;border-radius:999px;padding:.95rem 1.6rem;border:0;cursor:pointer;transition:transform .18s ease, box-shadow .18s ease, background .18s;}
+  .btn-app{background:var(--ink);color:#fff;box-shadow:var(--shadow-soft);}
+  .btn-app:hover{transform:translateY(-2px);box-shadow:0 22px 46px -20px rgba(20,21,42,.55);}
+  .btn-app svg{width:22px;height:22px;}
+  .btn-app .small{font-size:.68rem;font-weight:500;opacity:.8;line-height:1;display:block;margin-bottom:1px;}
+  .btn-app .big{font-size:1.05rem;font-weight:800;line-height:1;}
+  .btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--ink);transform:translateY(-2px);}
+  .btn-peri{background:var(--peri);color:#fff;box-shadow:0 14px 34px -16px rgba(92,107,245,.7);}
+  .btn-peri:hover{background:var(--peri-deep);transform:translateY(-2px);}
+
+  /* ---------- nav ---------- */
+  header.nav{position:sticky;top:0;z-index:100;backdrop-filter:saturate(140%) blur(10px);transition:box-shadow .25s, background .25s;}
+  header.nav.scrolled{background:rgba(250,248,243,.82);box-shadow:0 1px 0 var(--line);}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:1.05rem 0;}
+  .logo{display:flex;align-items:center;gap:.55rem;font-family:"Bricolage Grotesque";font-weight:800;font-size:1.35rem;letter-spacing:-.02em;}
+  .logo .mark{width:30px;height:30px;}
+  .nav-links{display:flex;align-items:center;gap:2rem;}
+  .nav-links a{font-weight:600;color:var(--ink-soft);font-size:.98rem;transition:color .15s;}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-cta{display:flex;align-items:center;gap:.9rem;}
+  .menu-btn{display:none;background:none;border:0;cursor:pointer;padding:.4rem;}
+  .menu-btn span{display:block;width:24px;height:2.4px;background:var(--ink);border-radius:3px;margin:5px 0;transition:.25s;}
+
+  /* ---------- hero ---------- */
+  .hero{position:relative;padding:4.5rem 0 5rem;overflow:hidden;}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:3rem;align-items:center;}
+  .badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--peri-soft);color:var(--peri-deep);font-weight:700;font-size:.82rem;padding:.45rem .9rem;border-radius:999px;margin-bottom:1.5rem;}
+  .badge .dot{width:8px;height:8px;border-radius:50%;background:var(--success);box-shadow:0 0 0 4px rgba(39,192,107,.18);}
+  .hero h1{font-size:clamp(3rem,6.4vw,5.3rem);}
+  .hero h1 .line2{color:var(--peri);}
+  .hero p.sub{font-size:1.2rem;color:var(--ink-soft);max-width:30rem;margin:1.5rem 0 2.1rem;}
+  .hero-cta{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+  .trust-row{display:flex;align-items:center;gap:1.8rem;margin-top:2.3rem;}
+  .trust-row .t{display:flex;flex-direction:column;}
+  .trust-row .t b{font-family:"Bricolage Grotesque";font-size:1.6rem;color:var(--peri);line-height:1;}
+  .trust-row .t span{font-size:.82rem;color:var(--ink-soft);margin-top:.25rem;}
+  .trust-sep{width:1px;height:34px;background:var(--line);}
+
+  /* decorative blobs */
+  .blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.5;z-index:-1;}
+  .blob.b1{width:420px;height:420px;background:radial-gradient(circle,#cfd4ff,transparent 70%);top:-120px;right:-80px;}
+  .blob.b2{width:340px;height:340px;background:radial-gradient(circle,#ffe6b8,transparent 70%);bottom:-120px;left:-120px;}
+
+  /* ---------- phone mockups ---------- */
+  .phones{position:relative;display:flex;justify-content:center;align-items:center;min-height:560px;}
+  .phone{
+    position:relative;width:280px;border-radius:46px;background:#0c0d1c;padding:11px;
+    box-shadow:0 40px 80px -30px rgba(20,21,42,.5),0 0 0 2px rgba(255,255,255,.04) inset;
+  }
+  .phone .island{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:96px;height:26px;background:#000;border-radius:999px;z-index:5;}
+  .screen{border-radius:36px;overflow:hidden;background:var(--paper);height:570px;position:relative;display:flex;flex-direction:column;}
+  .statusbar{display:flex;justify-content:space-between;align-items:center;padding:14px 22px 4px;font-size:12px;font-weight:700;}
+  .statusbar .icons{display:flex;gap:5px;align-items:center;}
+  .statusbar .icons i{display:block;width:16px;height:10px;border:1.5px solid var(--ink);border-radius:3px;opacity:.85;}
+
+  .phone.front{z-index:3;transform:rotate(-3deg);}
+  .phone.back{position:absolute;left:calc(50% + 70px);top:30px;transform:rotate(7deg) scale(.92);z-index:1;opacity:.96;}
+
+  /* home screen content */
+  .scr-pad{padding:6px 18px 0;flex:1;display:flex;flex-direction:column;}
+  .greet{font-size:13px;color:var(--ink-soft);font-weight:600;margin-top:6px;}
+  .scr-h1{font-family:"Bricolage Grotesque";font-size:26px;font-weight:800;margin-bottom:14px;}
+  .card-mini{background:#fff;border:1px solid var(--line);border-radius:18px;padding:13px 14px;box-shadow:var(--shadow-card);}
+  .level-card{display:flex;align-items:center;gap:12px;margin-bottom:13px;}
+  .level-card .lk{width:52px;height:60px;flex:none;}
+  .level-card .lv-label{font-size:11px;color:var(--peri);font-weight:700;}
+  .level-card .lv-title{font-family:"Bricolage Grotesque";font-weight:800;font-size:16px;}
+  .xpbar{height:6px;background:var(--peri-soft);border-radius:99px;margin-top:8px;overflow:hidden;}
+  .xpbar i{display:block;height:100%;width:8%;background:var(--peri);border-radius:99px;}
+  .goal-card{margin-bottom:13px;}
+  .goal-card .row{display:flex;justify-content:space-between;font-size:12px;}
+  .goal-card .gt{font-weight:700;color:var(--peri);}
+  .goal-card .gmain{font-weight:600;font-size:13px;margin-top:3px;}
+  .applock{display:flex;align-items:center;gap:11px;margin-bottom:auto;}
+  .applock .ic{width:38px;height:38px;border-radius:11px;background:var(--paper-2);display:flex;align-items:center;justify-content:center;flex:none;}
+  .applock .ic svg{width:18px;height:18px;}
+  .applock .at{font-weight:700;font-size:13px;}
+  .applock .as{font-size:11px;color:var(--ink-soft);}
+  .study-btn{background:var(--peri);color:#fff;text-align:center;font-weight:800;font-size:15px;border-radius:15px;padding:14px;margin:14px 0 12px;display:flex;align-items:center;justify-content:center;gap:7px;}
+  .tabbar{display:flex;justify-content:space-around;align-items:center;padding:11px 0 16px;border-top:1px solid var(--line);background:#fff;}
+  .tabbar .tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;color:var(--ink-soft);font-weight:600;}
+  .tabbar .tab.on{color:var(--peri);}
+  .tabbar .tab .b{width:34px;height:26px;border-radius:9px;display:flex;align-items:center;justify-content:center;}
+  .tabbar .tab.on .b{background:var(--peri);}
+  .tabbar .tab svg{width:16px;height:16px;}
+
+  /* quiz screen content */
+  .quiz-top{display:flex;justify-content:space-between;align-items:center;padding:8px 4px;}
+  .pill{background:var(--peri-soft);color:var(--peri-deep);font-weight:700;font-size:11px;padding:4px 10px;border-radius:99px;}
+  .qbar{height:5px;background:#eee;border-radius:99px;margin:4px 0 14px;overflow:hidden;}
+  .qbar i{display:block;height:100%;width:60%;background:var(--peri);}
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px 16px;box-shadow:var(--shadow-card);margin-bottom:14px;}
+  .qlabel{font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--peri);}
+  .qtext{font-family:"Bricolage Grotesque";font-weight:800;font-size:19px;margin-top:6px;}
+  .opt{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px 12px;margin-bottom:9px;font-size:13px;font-weight:600;}
+  .opt .k{width:22px;height:22px;border-radius:50%;background:var(--paper-2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:none;}
+  .opt.correct{border-color:var(--success);background:rgba(39,192,107,.08);}
+  .opt.correct .k{background:var(--success);color:#fff;}
+
+  /* ---------- section shells ---------- */
+  section{padding:5.5rem 0;}
+  .eyebrow{font-weight:800;font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;color:var(--peri);margin-bottom:.9rem;}
+  .sec-head h2{font-size:clamp(2.1rem,4.2vw,3.2rem);max-width:18ch;}
+  .sec-head p{color:var(--ink-soft);font-size:1.12rem;max-width:44ch;margin-top:1rem;}
+  .center{text-align:center;}
+  .center p{margin-left:auto;margin-right:auto;}
+
+  /* steps */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1.3rem;margin-top:3.2rem;}
+  .step{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:1.6rem;box-shadow:var(--shadow-card);position:relative;}
+  .step .num{font-family:"Bricolage Grotesque";font-weight:800;font-size:.9rem;width:34px;height:34px;border-radius:50%;background:var(--peri);color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:1.1rem;}
+  .step h3{font-size:1.18rem;margin-bottom:.5rem;}
+  .step p{color:var(--ink-soft);font-size:.96rem;}
+
+  /* features */
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem;margin-top:3.2rem;}
+  .feat{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:1.7rem;transition:transform .2s, box-shadow .2s;}
+  .feat:hover{transform:translateY(-4px);box-shadow:var(--shadow-card);}
+  .feat .fic{width:48px;height:48px;border-radius:14px;background:var(--peri-soft);display:flex;align-items:center;justify-content:center;margin-bottom:1.1rem;}
+  .feat .fic svg{width:24px;height:24px;stroke:var(--peri-deep);}
+  .feat h3{font-size:1.18rem;margin-bottom:.5rem;}
+  .feat p{color:var(--ink-soft);font-size:.96rem;}
+
+  /* concept (dark) */
+  .concept{background:var(--navy);color:#fff;border-radius:34px;padding:4.5rem clamp(1.5rem,5vw,4rem);position:relative;overflow:hidden;}
+  .concept .eyebrow{color:#aeb6ff;}
+  .concept h2{color:#fff;}
+  .concept .duo{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-top:3rem;}
+  .ccard{border-radius:var(--radius);padding:2rem;}
+  .ccard.bad{background:linear-gradient(160deg,#5C6BF5,#4351E0);}
+  .ccard.good{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);}
+  .ccard .cic{width:46px;height:46px;border-radius:13px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;margin-bottom:1.2rem;}
+  .ccard h3{font-size:1.5rem;margin-bottom:.7rem;}
+  .ccard p{opacity:.85;font-size:1rem;}
+
+  /* science */
+  .sci-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem;margin-top:3rem;}
+  .sci{padding:1.8rem;border-left:3px solid var(--peri);background:var(--paper-2);border-radius:0 16px 16px 0;}
+  .sci h3{font-size:1.2rem;margin-bottom:.55rem;}
+  .sci p{color:var(--ink-soft);font-size:.96rem;}
+
+  /* pricing */
+  .price-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;max-width:760px;margin:3.2rem auto 0;}
+  .price{background:#fff;border:1.5px solid var(--line);border-radius:26px;padding:2.2rem;position:relative;}
+  .price.best{border-color:var(--peri);box-shadow:0 24px 60px -28px rgba(92,107,245,.5);}
+  .price .tag{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--peri);color:#fff;font-weight:700;font-size:.78rem;padding:.4rem .9rem;border-radius:99px;}
+  .price .pname{font-weight:700;color:var(--ink-soft);}
+  .price .pamt{font-family:"Bricolage Grotesque";font-weight:800;font-size:3rem;line-height:1;margin:.4rem 0;}
+  .price .pamt small{font-size:1rem;color:var(--ink-soft);font-weight:600;}
+  .price .save{display:inline-block;background:rgba(39,192,107,.12);color:#149a52;font-weight:700;font-size:.82rem;padding:.3rem .7rem;border-radius:99px;margin-bottom:1rem;}
+  .price ul{list-style:none;margin:1.2rem 0 1.6rem;}
+  .price li{display:flex;gap:.6rem;align-items:flex-start;font-size:.96rem;margin-bottom:.6rem;color:var(--ink-soft);}
+  .price li svg{width:18px;height:18px;flex:none;margin-top:3px;stroke:var(--success);}
+  .price .btn{width:100%;justify-content:center;}
+  .price-note{text-align:center;color:var(--ink-soft);font-size:.9rem;margin-top:1.6rem;}
+
+  /* faq */
+  .faq{max-width:760px;margin:3rem auto 0;}
+  .qitem{border-bottom:1px solid var(--line);}
+  .qitem button{width:100%;display:flex;justify-content:space-between;align-items:center;gap:1rem;background:none;border:0;cursor:pointer;padding:1.3rem 0;text-align:left;font-family:"Bricolage Grotesque";font-weight:700;font-size:1.12rem;color:var(--ink);}
+  .qitem .plus{font-size:1.4rem;color:var(--peri);transition:transform .25s;flex:none;}
+  .qitem.open .plus{transform:rotate(45deg);}
+  .qitem .ans{max-height:0;overflow:hidden;transition:max-height .3s ease;color:var(--ink-soft);}
+  .qitem .ans p{padding-bottom:1.3rem;font-size:1rem;}
+
+  /* final cta */
+  .final{text-align:center;background:linear-gradient(165deg,var(--peri),var(--peri-deep));color:#fff;border-radius:34px;padding:4.5rem 2rem;position:relative;overflow:hidden;}
+  .final h2{color:#fff;font-size:clamp(2.2rem,4.5vw,3.4rem);}
+  .final p{opacity:.92;font-size:1.15rem;max-width:34ch;margin:1.2rem auto 2.2rem;}
+  .final .btn-app{background:#fff;color:var(--ink);}
+  .final .lk-float{width:90px;height:104px;margin:0 auto 1.5rem;}
+
+  /* footer */
+  footer{padding:3.5rem 0 2.5rem;border-top:1px solid var(--line);}
+  .foot-grid{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:2rem;}
+  .foot-links{display:flex;gap:2.2rem;flex-wrap:wrap;}
+  .foot-links a{color:var(--ink-soft);font-weight:600;font-size:.95rem;transition:color .15s;}
+  .foot-links a:hover{color:var(--peri);}
+  .foot-bottom{margin-top:2.5rem;color:var(--ink-soft);font-size:.85rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+
+  /* reveal animation */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);}
+  .reveal.in{opacity:1;transform:none;}
+
+  /* ---------- responsive ---------- */
+  @media(max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:1rem;}
+    .phones{margin-top:1rem;min-height:600px;}
+    .nav-links{display:none;}
+    .menu-btn{display:block;}
+    .steps{grid-template-columns:1fr 1fr;}
+    .feat-grid,.sci-grid{grid-template-columns:1fr;}
+    .concept .duo,.price-grid{grid-template-columns:1fr;}
+    .nav-cta .btn-ghost{display:none;}
+  }
+  @media(max-width:560px){
+    .steps{grid-template-columns:1fr;}
+    .phone.back{display:none;}
+    .phone.front{transform:rotate(0);}
+    .trust-row{gap:1.1rem;}
+    .hero{padding-top:2.5rem;}
+  }
+</style>
+</head>
+<body>
+
+<!-- =================== NAV =================== -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="#" class="logo">
+      <svg class="mark" viewBox="0 0 100 100"><rect x="22" y="45" width="56" height="44" rx="13" fill="#5C6BF5"/><path d="M33 47 V34 a17 17 0 0 1 34 0 V47" fill="none" stroke="#161A3A" stroke-width="9"/><circle cx="50" cy="65" r="6" fill="#161A3A"/></svg>
+      Quiz<span class="accent">Locky</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="#how" class="btn btn-ghost">See how it works</a>
+      <!-- TODO: replace # with your real App Store URL -->
+      <a href="#" class="btn btn-app">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.365 1.43c0 1.14-.42 2.2-1.13 3-.78.88-2.06 1.56-3.13 1.47-.13-1.1.42-2.27 1.1-3 .77-.83 2.12-1.46 3.16-1.47zM20.5 17.2c-.55 1.27-.81 1.83-1.51 2.95-.98 1.56-2.36 3.5-4.07 3.51-1.52.02-1.91-.99-3.97-.98-2.06.01-2.49 1-4.01.98-1.71-.02-3.02-1.77-4-3.33C-.02 16.45-.31 11.2 1.7 8.49c1.01-1.37 2.6-2.24 4.07-2.24 1.5 0 2.44 1 3.68 1 1.2 0 1.93-1 3.67-1 1.31 0 2.7.71 3.69 1.95-3.24 1.78-2.71 6.4.99 8z"/></svg>
+        <span><span class="small">Download on the</span><span class="big">App Store</span></span>
+      </a>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<!-- =================== HERO =================== -->
+<section class="hero">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <span class="badge"><span class="dot"></span> Now available on iOS</span>
+      <h1>Earn your<br /><span class="line2">screen time.</span></h1>
+      <p class="sub">Want to open TikTok? Clear a quiz first. QuizLocky locks the apps that distract you until you study — and Locky's AI builds the quizzes from your own notes.</p>
+      <div class="hero-cta">
+        <!-- TODO: replace # with your real App Store URL -->
+        <a href="#" class="btn btn-app">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.365 1.43c0 1.14-.42 2.2-1.13 3-.78.88-2.06 1.56-3.13 1.47-.13-1.1.42-2.27 1.1-3 .77-.83 2.12-1.46 3.16-1.47zM20.5 17.2c-.55 1.27-.81 1.83-1.51 2.95-.98 1.56-2.36 3.5-4.07 3.51-1.52.02-1.91-.99-3.97-.98-2.06.01-2.49 1-4.01.98-1.71-.02-3.02-1.77-4-3.33C-.02 16.45-.31 11.2 1.7 8.49c1.01-1.37 2.6-2.24 4.07-2.24 1.5 0 2.44 1 3.68 1 1.2 0 1.93-1 3.67-1 1.31 0 2.7.71 3.69 1.95-3.24 1.78-2.71 6.4.99 8z"/></svg>
+          <span><span class="small">Download on the</span><span class="big">App Store</span></span>
+        </a>
+        <a href="#how" class="btn btn-ghost">See how it works</a>
+      </div>
+      <div class="trust-row">
+        <div class="t"><b>AI</b><span>Quizzes from your notes</span></div>
+        <div class="trust-sep"></div>
+        <div class="t"><b>Lock</b><span>Apps stay shut till you study</span></div>
+        <div class="trust-sep"></div>
+        <div class="t"><b>iOS</b><span>Powered by Screen Time</span></div>
+      </div>
+    </div>
+
+    <!-- phone mockups -->
+    <div class="phones">
+      <!-- BACK phone: quiz -->
+      <div class="phone back">
+        <div class="island"></div>
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><div class="icons"><i></i></div></div>
+          <div class="scr-pad">
+            <div class="quiz-top"><span style="font-weight:700;font-size:13px;">✕</span><span class="pill">🔒 5 left</span></div>
+            <div class="qbar"><i></i></div>
+            <div class="qcard">
+              <div class="qlabel">QUESTION</div>
+              <div class="qtext">Which word means “tomorrow”?</div>
+            </div>
+            <div class="opt"><span class="k">A</span> Hoy</div>
+            <div class="opt"><span class="k">B</span> Ayer</div>
+            <div class="opt correct"><span class="k">✓</span> Mañana</div>
+            <div class="opt"><span class="k">D</span> Ahora</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FRONT phone: home -->
+      <div class="phone front">
+        <div class="island"></div>
+        <div class="screen">
+          <div class="statusbar"><span>9:41</span><div class="icons"><i></i></div></div>
+          <div class="scr-pad">
+            <div class="greet">Good evening</div>
+            <div class="scr-h1">Let's focus</div>
+
+            <div class="card-mini level-card">
+              <!-- LOCKY (swap for your real PNG for best results) -->
+              <div class="lk" aria-hidden="true"><svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;"><defs><linearGradient id="lb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6E7BFF"/><stop offset="1" stop-color="#5260F0"/></linearGradient></defs><path d="M62 84 V60 a38 38 0 0 1 76 0 V84" fill="none" stroke="#C9CDDB" stroke-width="17" stroke-linecap="round"/><path d="M62 84 V60 a38 38 0 0 1 76 0 V84" fill="none" stroke="#9AA0B8" stroke-width="6" stroke-linecap="round" opacity=".5"/><rect x="40" y="78" width="120" height="118" rx="30" fill="url(#lb)"/><rect x="40" y="78" width="120" height="118" rx="30" fill="#fff" opacity=".10"/><g transform="translate(0,2)"><ellipse cx="78" cy="128" rx="22" ry="22" fill="#fff"/><ellipse cx="122" cy="128" rx="22" ry="22" fill="#fff"/><circle cx="78" cy="128" r="20" fill="none" stroke="#1B2147" stroke-width="5"/><circle cx="122" cy="128" r="20" fill="none" stroke="#1B2147" stroke-width="5"/><line x1="98" y1="124" x2="102" y2="124" stroke="#1B2147" stroke-width="5"/><circle cx="80" cy="130" r="7.5" fill="#1B2147"/><circle cx="124" cy="130" r="7.5" fill="#1B2147"/><circle cx="83" cy="127" r="2.4" fill="#fff"/><circle cx="127" cy="127" r="2.4" fill="#fff"/></g><path d="M86 160 q14 12 28 0" fill="none" stroke="#1B2147" stroke-width="5" stroke-linecap="round"/><rect x="92" y="176" width="16" height="20" rx="6" fill="#2C336A"/><g transform="rotate(-12 100 56)"><polygon points="100,30 158,52 100,74 42,52" fill="#1A1A2E"/><polygon points="100,46 128,57 100,68 72,57" fill="#11111F"/><line x1="150" y1="55" x2="150" y2="78" stroke="#FFB020" stroke-width="3.5" stroke-linecap="round"/><circle cx="150" cy="80" r="5" fill="#FFB020"/></g><rect x="20" y="120" width="20" height="40" rx="10" fill="#5260F0"/><rect x="160" y="120" width="20" height="40" rx="10" fill="#5260F0"/><rect x="62" y="196" width="22" height="30" rx="11" fill="#5260F0"/><rect x="116" y="196" width="22" height="30" rx="11" fill="#5260F0"/></svg></div>
+              <div>
+                <div class="lv-label">Level 1</div>
+                <div class="lv-title">Lock Rookie</div>
+                <div class="xpbar"><i></i></div>
+              </div>
+            </div>
+
+            <div class="card-mini goal-card">
+              <div class="row"><span class="gt">◎ Today's goal</span><span style="color:var(--ink-soft)">0 / 1</span></div>
+              <div class="gmain">Clear 1 deck to keep your streak.</div>
+            </div>
+
+            <div class="card-mini applock">
+              <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#5C6BF5" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+              <div><div class="at">Choose apps to lock</div><div class="as">Pick the apps that distract you</div></div>
+            </div>
+
+            <div class="study-btn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" style="width:16px;height:16px;"><path d="M8 11V8a4 4 0 0 1 8 0"/><rect x="5" y="11" width="14" height="10" rx="2"/></svg> Study to Unlock</div>
+          </div>
+          <div class="tabbar">
+            <div class="tab on"><span class="b"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></span>Home</div>
+            <div class="tab"><span class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></span>Decks</div>
+            <div class="tab"><span class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="3"/></svg></span>Coach</div>
+            <div class="tab"><span class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span>Stats</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== HOW IT WORKS =================== -->
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">How it works</div>
+      <h2>Simple. Smart. Effective.</h2>
+      <p>Set it up once and QuizLocky handles the rest, making sure you study before you scroll.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal"><div class="num">1</div><h3>Add your material</h3><p>Paste your notes, import a PDF, or snap a photo. Locky's AI turns it into a quiz in seconds.</p></div>
+      <div class="step reveal"><div class="num">2</div><h3>Lock your apps</h3><p>Pick the apps that pull you in. They stay locked behind your studying.</p></div>
+      <div class="step reveal"><div class="num">3</div><h3>Study to unlock</h3><p>Clear a quiz built from your own material to earn your screen time back.</p></div>
+      <div class="step reveal"><div class="num">4</div><h3>Build the habit</h3><p>Streaks, stats and an AI coach keep you coming back and remembering more.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== FEATURES =================== -->
+<section id="features" style="background:var(--paper-2);">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Features</div>
+      <h2>Everything you need to actually study.</h2>
+    </div>
+    <div class="feat-grid">
+      <div class="feat reveal"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 3l1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg></div><h3>AI Question Generator</h3><p>Paste your material and AI creates flashcards and quiz questions instantly. No more making cards by hand.</p></div>
+      <div class="feat reveal"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div><h3>App Locking</h3><p>Lock any app on your phone. They stay locked until you prove you've studied. It's that simple.</p></div>
+      <div class="feat reveal"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18"/></svg></div><h3>Smart Flashcards</h3><p>Study inside the app with clean flashcards and spaced repetition. The more you get right, the more time you earn.</p></div>
+      <div class="feat reveal"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></div><h3>Progress Tracking</h3><p>See how much you've studied, what you've mastered, and how much screen time you've earned this week.</p></div>
+      <div class="feat reveal"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div><h3>Instant Setup</h3><p>Add your study material in seconds. The AI handles organizing everything so you can focus on learning.</p></div>
+      <div class="feat reveal"><div class="fic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg></div><h3>Your Material, Your Rules</h3><p>Works with any subject — biology, history, languages, code. If you can write it, Locky can quiz you on it.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== CONCEPT =================== -->
+<section>
+  <div class="wrap">
+    <div class="concept reveal">
+      <div class="eyebrow">The concept</div>
+      <h2 style="font-size:clamp(2.1rem,4.2vw,3.2rem);">A true win-win.</h2>
+      <p style="opacity:.85;font-size:1.12rem;margin-top:1rem;max-width:46ch;">Most study apps fight your phone habits. QuizLocky puts them to work for you.</p>
+      <div class="duo">
+        <div class="ccard bad">
+          <div class="cic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:24px;height:24px;"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg></div>
+          <h3>Less mindless scrolling</h3>
+          <p>By making you earn your screen time, you naturally use your phone less and more intentionally. Your brain gets a break from the dopamine loop.</p>
+        </div>
+        <div class="ccard good">
+          <div class="cic"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" style="width:24px;height:24px;"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 7v5l3 2"/></svg></div>
+          <h3>More actual studying</h3>
+          <p>Every time you reach for your phone, you study. Not because you forced yourself, but because that's just how it works now. Effortless habit-building.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== SCIENCE =================== -->
+<section id="science">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Why it works</div>
+      <h2>Built on how memory actually works.</h2>
+      <p>QuizLocky isn't a gimmick. It's built around two of the most well-established findings in learning science.</p>
+    </div>
+    <div class="sci-grid">
+      <div class="sci reveal"><h3>Active recall</h3><p>Testing yourself is one of the most effective ways to learn — far more than re-reading or highlighting. Every unlock makes you recall, not just review.</p></div>
+      <div class="sci reveal"><h3>Spaced repetition</h3><p>Reviewing at increasing intervals beats cramming and fights the forgetting curve. Locky resurfaces what you're about to forget.</p></div>
+      <div class="sci reveal"><h3>Protected focus</h3><p>Phone distraction fragments attention. Locking your apps while you study protects both your time and your memory.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== PRICING =================== -->
+<section id="pricing" style="background:var(--paper-2);">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <div class="eyebrow">Pricing</div>
+      <h2 style="margin:0 auto;">Start free. Stay focused.</h2>
+      <p>Try QuizLocky free for 7 days. Cancel anytime before it ends and you won't be charged.</p>
+    </div>
+    <div class="price-grid">
+      <div class="price reveal">
+        <div class="pname">Weekly</div>
+        <div class="pamt">$5.99<small> / week</small></div>
+        <span class="save">Flexible</span>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> All features unlocked</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Unlimited AI quizzes</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Cancel anytime</li>
+        </ul>
+        <!-- TODO: replace # with your real App Store URL -->
+        <a href="#" class="btn btn-ghost">Start 7-day free trial</a>
+      </div>
+      <div class="price best reveal">
+        <span class="tag">Best value · Save 84%</span>
+        <div class="pname">Annual</div>
+        <div class="pamt">$49.99<small> / year</small></div>
+        <span class="save">Just ~$0.96 / week</span>
+        <ul>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Everything in Weekly</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> AI study coach</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Best price, billed yearly</li>
+        </ul>
+        <!-- TODO: replace # with your real App Store URL -->
+        <a href="#" class="btn btn-peri">Start 7-day free trial</a>
+      </div>
+    </div>
+    <p class="price-note">Subscriptions renew automatically until cancelled. Manage or cancel anytime in your App Store account settings.</p>
+  </div>
+</section>
+
+<!-- =================== FAQ =================== -->
+<section id="faq">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <div class="eyebrow">FAQ</div>
+      <h2 style="margin:0 auto;">Good questions.</h2>
+    </div>
+    <div class="faq">
+      <div class="qitem"><button>Does it really lock my apps?<span class="plus">+</span></button><div class="ans"><p>Yes. QuizLocky uses Apple's built-in Screen Time framework to lock the apps you choose. They stay blocked until you clear a quiz, and your Screen Time data stays private on your device.</p></div></div>
+      <div class="qitem"><button>What can I study with it?<span class="plus">+</span></button><div class="ans"><p>Anything you can put into text. Paste your notes, import a PDF, or snap a photo of a textbook page — Locky's AI turns it into flashcards and quiz questions. It works for languages, biology, history, code, and more.</p></div></div>
+      <div class="qitem"><button>Is my data private?<span class="plus">+</span></button><div class="ans"><p>Yes. The list of apps you block is handled by Apple on your device and never leaves your phone. We only store what's needed to run your account and your study decks. See our <a href="/privacy.html" class="accent">Privacy Policy</a> for details.</p></div></div>
+      <div class="qitem"><button>How much does it cost?<span class="plus">+</span></button><div class="ans"><p>You get a 7-day free trial. After that it's $5.99 per week or $49.99 per year. Cancel anytime before the trial ends and you won't be charged.</p></div></div>
+      <div class="qitem"><button>Can I cancel anytime?<span class="plus">+</span></button><div class="ans"><p>Absolutely. Manage or cancel your subscription anytime from your App Store account settings — no emails, no hoops.</p></div></div>
+      <div class="qitem"><button>What devices does it work on?<span class="plus">+</span></button><div class="ans"><p>QuizLocky is built for iPhone and uses iOS Screen Time, so it requires an iPhone running a recent version of iOS.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- =================== FINAL CTA =================== -->
+<section>
+  <div class="wrap">
+    <div class="final reveal">
+      <div class="lk-float" aria-hidden="true"><svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;"><defs><linearGradient id="lb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6E7BFF"/><stop offset="1" stop-color="#5260F0"/></linearGradient></defs><path d="M62 84 V60 a38 38 0 0 1 76 0 V84" fill="none" stroke="#C9CDDB" stroke-width="17" stroke-linecap="round"/><path d="M62 84 V60 a38 38 0 0 1 76 0 V84" fill="none" stroke="#9AA0B8" stroke-width="6" stroke-linecap="round" opacity=".5"/><rect x="40" y="78" width="120" height="118" rx="30" fill="url(#lb)"/><rect x="40" y="78" width="120" height="118" rx="30" fill="#fff" opacity=".10"/><g transform="translate(0,2)"><ellipse cx="78" cy="128" rx="22" ry="22" fill="#fff"/><ellipse cx="122" cy="128" rx="22" ry="22" fill="#fff"/><circle cx="78" cy="128" r="20" fill="none" stroke="#1B2147" stroke-width="5"/><circle cx="122" cy="128" r="20" fill="none" stroke="#1B2147" stroke-width="5"/><line x1="98" y1="124" x2="102" y2="124" stroke="#1B2147" stroke-width="5"/><circle cx="80" cy="130" r="7.5" fill="#1B2147"/><circle cx="124" cy="130" r="7.5" fill="#1B2147"/><circle cx="83" cy="127" r="2.4" fill="#fff"/><circle cx="127" cy="127" r="2.4" fill="#fff"/></g><path d="M86 160 q14 12 28 0" fill="none" stroke="#1B2147" stroke-width="5" stroke-linecap="round"/><rect x="92" y="176" width="16" height="20" rx="6" fill="#2C336A"/><g transform="rotate(-12 100 56)"><polygon points="100,30 158,52 100,74 42,52" fill="#1A1A2E"/><polygon points="100,46 128,57 100,68 72,57" fill="#11111F"/><line x1="150" y1="55" x2="150" y2="78" stroke="#FFB020" stroke-width="3.5" stroke-linecap="round"/><circle cx="150" cy="80" r="5" fill="#FFB020"/></g><rect x="20" y="120" width="20" height="40" rx="10" fill="#5260F0"/><rect x="160" y="120" width="20" height="40" rx="10" fill="#5260F0"/><rect x="62" y="196" width="22" height="30" rx="11" fill="#5260F0"/><rect x="116" y="196" width="22" height="30" rx="11" fill="#5260F0"/></svg></div>
+      <h2>Turn your phone into your study weapon.</h2>
+      <p>Stop scrolling your study time away. Start earning it back, one quiz at a time.</p>
+      <!-- TODO: replace # with your real App Store URL -->
+      <a href="#" class="btn btn-app">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.365 1.43c0 1.14-.42 2.2-1.13 3-.78.88-2.06 1.56-3.13 1.47-.13-1.1.42-2.27 1.1-3 .77-.83 2.12-1.46 3.16-1.47zM20.5 17.2c-.55 1.27-.81 1.83-1.51 2.95-.98 1.56-2.36 3.5-4.07 3.51-1.52.02-1.91-.99-3.97-.98-2.06.01-2.49 1-4.01.98-1.71-.02-3.02-1.77-4-3.33C-.02 16.45-.31 11.2 1.7 8.49c1.01-1.37 2.6-2.24 4.07-2.24 1.5 0 2.44 1 3.68 1 1.2 0 1.93-1 3.67-1 1.31 0 2.7.71 3.69 1.95-3.24 1.78-2.71 6.4.99 8z"/></svg>
+        <span><span class="small">Download on the</span><span class="big">App Store</span></span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- =================== FOOTER =================== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div style="max-width:300px;">
+        <a href="#" class="logo" style="margin-bottom:1rem;">
+          <svg class="mark" viewBox="0 0 100 100"><rect x="22" y="45" width="56" height="44" rx="13" fill="#5C6BF5"/><path d="M33 47 V34 a17 17 0 0 1 34 0 V47" fill="none" stroke="#161A3A" stroke-width="9"/><circle cx="50" cy="65" r="6" fill="#161A3A"/></svg>
+          Quiz<span class="accent">Locky</span>
+        </a>
+        <p style="color:var(--ink-soft);font-size:.92rem;">Lock the apps that distract you. Study to unlock them. Earn your screen time.</p>
+      </div>
+      <div class="foot-links">
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms of Service</a>
+        <!-- TODO: replace with your real support email -->
+        <a href="mailto:support@quizlocky.site">Support</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span id="year"></span> QuizLocky. All rights reserved.</span>
+      <span>Made for students who'd rather pass than scroll.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // year
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // sticky nav shadow
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 10));
+
+  // mobile menu (simple smooth-scroll fallback — links already anchor)
+  document.getElementById('menuBtn').addEventListener('click', () => {
+    document.querySelector('.nav-links') && alert('Use the section links: How it works · Features · Pricing · FAQ');
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.qitem button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.parentElement;
+      const ans = item.querySelector('.ans');
+      const open = item.classList.toggle('open');
+      ans.style.maxHeight = open ? ans.scrollHeight + 'px' : 0;
+    });
+  });
+
+  // scroll reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  }, { threshold:.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
