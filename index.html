@@ -10,6 +10,12 @@
 <meta property="og:title" content="QuizLocky — Earn Your Screen Time" />
 <meta property="og:description" content="Lock the apps that distract you until you study. AI quizzes from your own notes. Available on iOS." />
 <meta property="og:type" content="website" />
+<meta property="og:url" content="https://www.quizlocky.site/" />
+<meta property="og:image" content="https://www.quizlocky.site/img/og.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="https://www.quizlocky.site/img/og.jpg" />
+<!-- native install banner for iOS Safari — the highest-intent visitors -->
+<meta name="apple-itunes-app" content="app-id=6775924527" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -229,6 +235,21 @@
   .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);}
   .reveal.in{opacity:1;transform:none;}
 
+  /* trust + microcopy */
+  .cta-note{font-size:.83rem;color:var(--ink-soft);margin-top:.8rem;}
+  .review-strip{display:flex;align-items:center;justify-content:center;gap:.55rem;margin-top:1.1rem;font-size:.98rem;font-weight:600;flex-wrap:wrap;}
+  .review-strip .stars{color:var(--amber);letter-spacing:.1em;}
+  .review-strip .who{color:var(--ink-soft);font-weight:500;font-size:.85rem;}
+
+  /* mobile slide-down menu */
+  .mmenu{display:none;position:fixed;top:64px;left:0;right:0;background:#fff;border-bottom:1px solid var(--line);box-shadow:var(--shadow-soft);z-index:60;padding:.5rem 1.2rem 1rem;}
+  .mmenu.open{display:block;}
+  .mmenu a{display:block;padding:.85rem .2rem;font-weight:700;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--line);}
+  .mmenu a:last-child{border-bottom:0;}
+
+  /* sticky mobile CTA */
+  .mcta{display:none;}
+
   /* ---------- responsive ---------- */
   @media(max-width:900px){
     .hero-grid{grid-template-columns:1fr;gap:1rem;}
@@ -240,12 +261,26 @@
     .concept .duo,.price-grid{grid-template-columns:1fr;}
     .nav-cta .btn-ghost{display:none;}
   }
+  @media(max-width:900px){
+    .price-grid .price.best{order:-1;}   /* best value first when stacked */
+  }
   @media(max-width:560px){
     .steps{grid-template-columns:1fr;}
     .phone.back{display:none;}
     .phone.front{transform:rotate(0);}
     .trust-row{gap:1.1rem;}
     .hero{padding-top:2.5rem;}
+    /* compact header button — it was overlapping the logo at phone widths */
+    .nav-cta{gap:.5rem;}
+    .nav-cta .btn-app{padding:.5rem .8rem;border-radius:12px;}
+    .nav-cta .btn-app .small{display:none;}
+    .nav-cta .btn-app .big{font-size:.82rem;}
+    .nav-cta .btn-app svg{width:14px;height:14px;}
+    .logo{font-size:1.05rem;}
+    /* sticky bottom CTA */
+    .mcta{display:block;position:fixed;left:0;right:0;bottom:0;z-index:70;padding:.6rem .9rem calc(.6rem + env(safe-area-inset-bottom));background:rgba(250,248,243,.92);backdrop-filter:blur(10px);border-top:1px solid var(--line);transform:translateY(110%);transition:transform .3s ease;}
+    .mcta.show{transform:none;}
+    .mcta a{display:flex;align-items:center;justify-content:center;gap:.5rem;background:var(--navy);color:#fff;font-weight:800;border-radius:14px;padding:.85rem;text-decoration:none;font-size:.95rem;}
   }
 </style>
 </head>
@@ -266,14 +301,20 @@
     </nav>
     <div class="nav-cta">
       <a href="#how" class="btn btn-ghost">See how it works</a>
-      <a href="https://apps.apple.com/app/id6775924527" class="btn btn-app">
+      <a href="https://apps.apple.com/app/id6775924527" class="btn btn-app" data-place="nav">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.365 1.43c0 1.14-.42 2.2-1.13 3-.78.88-2.06 1.56-3.13 1.47-.13-1.1.42-2.27 1.1-3 .77-.83 2.12-1.46 3.16-1.47zM20.5 17.2c-.55 1.27-.81 1.83-1.51 2.95-.98 1.56-2.36 3.5-4.07 3.51-1.52.02-1.91-.99-3.97-.98-2.06.01-2.49 1-4.01.98-1.71-.02-3.02-1.77-4-3.33C-.02 16.45-.31 11.2 1.7 8.49c1.01-1.37 2.6-2.24 4.07-2.24 1.5 0 2.44 1 3.68 1 1.2 0 1.93-1 3.67-1 1.31 0 2.7.71 3.69 1.95-3.24 1.78-2.71 6.4.99 8z"/></svg>
         <span><span class="small">Download on the</span><span class="big">App Store</span></span>
       </a>
-      <button class="menu-btn" id="menuBtn" aria-label="Menu"><span></span><span></span><span></span></button>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
+<nav class="mmenu" id="mmenu" aria-label="Mobile">
+  <a href="#how">How it works</a>
+  <a href="#features">Features</a>
+  <a href="#pricing">Pricing</a>
+  <a href="#faq">FAQ</a>
+</nav>
 
 <!-- =================== HERO =================== -->
 <section class="hero">
@@ -283,14 +324,15 @@
     <div>
       <span class="badge"><span class="dot"></span> Now available on iOS</span>
       <h1>Earn your<br /><span class="line2">screen time.</span></h1>
-      <p class="sub">Want to open TikTok? Clear a quiz first. QuizLocky locks the apps that distract you until you study — and Locky's AI builds the quizzes from your own notes.</p>
+      <p class="sub">Want to open TikTok? Clear a quiz first. QuizLocky locks the apps that distract you until you study, and Locky's AI builds the quizzes from your own notes.</p>
       <div class="hero-cta">
-        <a href="https://apps.apple.com/app/id6775924527" class="btn btn-app">
+        <a href="https://apps.apple.com/app/id6775924527" class="btn btn-app" data-place="hero">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.365 1.43c0 1.14-.42 2.2-1.13 3-.78.88-2.06 1.56-3.13 1.47-.13-1.1.42-2.27 1.1-3 .77-.83 2.12-1.46 3.16-1.47zM20.5 17.2c-.55 1.27-.81 1.83-1.51 2.95-.98 1.56-2.36 3.5-4.07 3.51-1.52.02-1.91-.99-3.97-.98-2.06.01-2.49 1-4.01.98-1.71-.02-3.02-1.77-4-3.33C-.02 16.45-.31 11.2 1.7 8.49c1.01-1.37 2.6-2.24 4.07-2.24 1.5 0 2.44 1 3.68 1 1.2 0 1.93-1 3.67-1 1.31 0 2.7.71 3.69 1.95-3.24 1.78-2.71 6.4.99 8z"/></svg>
           <span><span class="small">Download on the</span><span class="big">App Store</span></span>
         </a>
         <a href="#how" class="btn btn-ghost">See how it works</a>
       </div>
+      <p class="cta-note">Free 3-day trial · set up in minutes · cancel anytime</p>
       <div class="trust-row">
         <div class="t"><b>AI</b><span>Quizzes from your notes</span></div>
         <div class="trust-sep"></div>
@@ -342,7 +384,7 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <div class="eyebrow">How it works</div>
-      <h2>Simple. Smart. Effective.</h2>
+      <h2>Study first. Scroll after.</h2>
       <p>Set it up once and QuizLocky handles the rest, making sure you study before you scroll.</p>
     </div>
     <div class="steps">
@@ -418,6 +460,7 @@
       <div class="eyebrow">Pricing</div>
       <h2 style="margin:0 auto;">Start free. Stay focused.</h2>
       <p>Try QuizLocky free for 3 days. Cancel anytime before it ends and you won't be charged.</p>
+      <div class="review-strip reveal"><span class="stars">★★★★★</span><span>“Best study app eveeer”</span><span class="who">— App Store review</span></div>
     </div>
     <div class="price-grid">
       <div class="price reveal">
@@ -429,7 +472,7 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Unlimited AI quizzes</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Cancel anytime</li>
         </ul>
-        <a href="https://apps.apple.com/app/id6775924527" class="btn btn-ghost">Start 3-day free trial</a>
+        <a href="https://apps.apple.com/app/id6775924527" class="btn btn-ghost" data-place="pricing_weekly">Start 3-day free trial</a>
       </div>
       <div class="price best reveal">
         <span class="tag">Best value · Save 84%</span>
@@ -441,7 +484,7 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> AI study coach</li>
           <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg> Best price, billed yearly</li>
         </ul>
-        <a href="https://apps.apple.com/app/id6775924527" class="btn btn-peri">Start 3-day free trial</a>
+        <a href="https://apps.apple.com/app/id6775924527" class="btn btn-peri" data-place="pricing_annual">Start 3-day free trial</a>
       </div>
     </div>
     <p class="price-note">Subscriptions renew automatically until cancelled. Manage or cancel anytime in your App Store account settings.</p>
@@ -461,6 +504,7 @@
       <div class="qitem"><button>Is my data private?<span class="plus">+</span></button><div class="ans"><p>Yes. The list of apps you block is handled by Apple on your device and never leaves your phone. We only store what's needed to run your account and your study decks. See our <a href="/privacy.html" class="accent">Privacy Policy</a> for details.</p></div></div>
       <div class="qitem"><button>How much does it cost?<span class="plus">+</span></button><div class="ans"><p>You get a 3-day free trial. After that it's $5.99 per week or $49.99 per year. Cancel anytime before the trial ends and you won't be charged.</p></div></div>
       <div class="qitem"><button>Can I cancel anytime?<span class="plus">+</span></button><div class="ans"><p>Absolutely. Manage or cancel your subscription anytime from your App Store account settings — no emails, no hoops.</p></div></div>
+      <div class="qitem"><button>Can't I just delete the app to skip the quiz?<span class="plus">+</span></button><div class="ans"><p>Technically, yes. But that's the point: deleting an app and setting it up again later is a real decision. Mindlessly opening TikTok isn't. QuizLocky adds just enough friction that the easiest path becomes studying, and for most people that's all it takes.</p></div></div>
       <div class="qitem"><button>What devices does it work on?<span class="plus">+</span></button><div class="ans"><p>QuizLocky is built for iPhone and uses iOS Screen Time, so it requires an iPhone running a recent version of iOS.</p></div></div>
     </div>
   </div>
@@ -473,10 +517,11 @@
       <div class="lk-float" aria-hidden="true"><svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;"><defs><linearGradient id="lb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6E7BFF"/><stop offset="1" stop-color="#5260F0"/></linearGradient></defs><path d="M62 84 V60 a38 38 0 0 1 76 0 V84" fill="none" stroke="#C9CDDB" stroke-width="17" stroke-linecap="round"/><path d="M62 84 V60 a38 38 0 0 1 76 0 V84" fill="none" stroke="#9AA0B8" stroke-width="6" stroke-linecap="round" opacity=".5"/><rect x="40" y="78" width="120" height="118" rx="30" fill="url(#lb)"/><rect x="40" y="78" width="120" height="118" rx="30" fill="#fff" opacity=".10"/><g transform="translate(0,2)"><ellipse cx="78" cy="128" rx="22" ry="22" fill="#fff"/><ellipse cx="122" cy="128" rx="22" ry="22" fill="#fff"/><circle cx="78" cy="128" r="20" fill="none" stroke="#1B2147" stroke-width="5"/><circle cx="122" cy="128" r="20" fill="none" stroke="#1B2147" stroke-width="5"/><line x1="98" y1="124" x2="102" y2="124" stroke="#1B2147" stroke-width="5"/><circle cx="80" cy="130" r="7.5" fill="#1B2147"/><circle cx="124" cy="130" r="7.5" fill="#1B2147"/><circle cx="83" cy="127" r="2.4" fill="#fff"/><circle cx="127" cy="127" r="2.4" fill="#fff"/></g><path d="M86 160 q14 12 28 0" fill="none" stroke="#1B2147" stroke-width="5" stroke-linecap="round"/><rect x="92" y="176" width="16" height="20" rx="6" fill="#2C336A"/><g transform="rotate(-12 100 56)"><polygon points="100,30 158,52 100,74 42,52" fill="#1A1A2E"/><polygon points="100,46 128,57 100,68 72,57" fill="#11111F"/><line x1="150" y1="55" x2="150" y2="78" stroke="#FFB020" stroke-width="3.5" stroke-linecap="round"/><circle cx="150" cy="80" r="5" fill="#FFB020"/></g><rect x="20" y="120" width="20" height="40" rx="10" fill="#5260F0"/><rect x="160" y="120" width="20" height="40" rx="10" fill="#5260F0"/><rect x="62" y="196" width="22" height="30" rx="11" fill="#5260F0"/><rect x="116" y="196" width="22" height="30" rx="11" fill="#5260F0"/></svg></div>
       <h2>Turn your phone into your study weapon.</h2>
       <p>Stop scrolling your study time away. Start earning it back, one quiz at a time.</p>
-      <a href="https://apps.apple.com/app/id6775924527" class="btn btn-app">
+      <a href="https://apps.apple.com/app/id6775924527" class="btn btn-app" data-place="final">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.365 1.43c0 1.14-.42 2.2-1.13 3-.78.88-2.06 1.56-3.13 1.47-.13-1.1.42-2.27 1.1-3 .77-.83 2.12-1.46 3.16-1.47zM20.5 17.2c-.55 1.27-.81 1.83-1.51 2.95-.98 1.56-2.36 3.5-4.07 3.51-1.52.02-1.91-.99-3.97-.98-2.06.01-2.49 1-4.01.98-1.71-.02-3.02-1.77-4-3.33C-.02 16.45-.31 11.2 1.7 8.49c1.01-1.37 2.6-2.24 4.07-2.24 1.5 0 2.44 1 3.68 1 1.2 0 1.93-1 3.67-1 1.31 0 2.7.71 3.69 1.95-3.24 1.78-2.71 6.4.99 8z"/></svg>
         <span><span class="small">Download on the</span><span class="big">App Store</span></span>
       </a>
+      <p class="cta-note" style="opacity:.8;">Free for 3 days, then $5.99/week or $49.99/year. Cancel anytime.</p>
     </div>
   </div>
 </section>
@@ -509,6 +554,8 @@
   </div>
 </footer>
 
+<div class="mcta" id="mcta"><a href="https://apps.apple.com/app/id6775924527" data-place="sticky">🔒 Get QuizLocky · free 3-day trial</a></div>
+
 <script>
   // year
   document.getElementById('year').textContent = new Date().getFullYear();
@@ -517,10 +564,20 @@
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 10));
 
-  // mobile menu (simple smooth-scroll fallback — links already anchor)
-  document.getElementById('menuBtn').addEventListener('click', () => {
-    document.querySelector('.nav-links') && alert('Use the section links: How it works · Features · Pricing · FAQ');
+  // mobile menu
+  const menuBtn = document.getElementById('menuBtn'), mmenu = document.getElementById('mmenu');
+  menuBtn.addEventListener('click', () => {
+    const open = mmenu.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', open);
   });
+  mmenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mmenu.classList.remove('open')));
+
+  // sticky mobile CTA — appears once the hero CTA has scrolled away
+  const mcta = document.getElementById('mcta');
+  window.addEventListener('scroll', () => {
+    mcta.classList.toggle('show', window.scrollY > 550 &&
+      window.innerHeight + window.scrollY < document.body.scrollHeight - 300);
+  }, {passive:true});
 
   // FAQ accordion
   document.querySelectorAll('.qitem button').forEach(btn => {
@@ -537,6 +594,13 @@
     entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
   }, { threshold:.12 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // analytics: which button actually sends people to the App Store
+  !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+  posthog.init('phc_CbXNUEFU9TZurAiNqjcWXsHqxYh4jCpxjzcH8vRmyuJm',{api_host:'https://eu.i.posthog.com',person_profiles:'identified_only'});
+  document.querySelectorAll('a[href*="apps.apple.com"]').forEach(a => {
+    a.addEventListener('click', () => posthog.capture('appstore_click', {placement: a.dataset.place || 'unknown'}));
+  });
 </script>
 </body>
 </html>
