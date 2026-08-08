@@ -117,47 +117,33 @@
   .phone.front{z-index:3;transform:rotate(-3deg);}
   .phone.back{position:absolute;left:calc(50% + 70px);top:30px;transform:rotate(7deg) scale(.92);z-index:1;opacity:.96;}
 
-  /* home screen content */
-  .scr-pad{padding:6px 18px 0;flex:1;display:flex;flex-direction:column;}
-  .greet{font-size:13px;color:var(--ink-soft);font-weight:600;margin-top:6px;}
-  .scr-h1{font-family:"Bricolage Grotesque";font-size:26px;font-weight:800;margin-bottom:14px;}
-  .card-mini{background:#fff;border:1px solid var(--line);border-radius:18px;padding:13px 14px;box-shadow:var(--shadow-card);}
-  .level-card{display:flex;align-items:center;gap:12px;margin-bottom:13px;}
-  .level-card .lk{width:52px;height:60px;flex:none;}
-  .level-card .lv-label{font-size:11px;color:var(--peri);font-weight:700;}
-  .level-card .lv-title{font-family:"Bricolage Grotesque";font-weight:800;font-size:16px;}
-  .xpbar{height:6px;background:var(--peri-soft);border-radius:99px;margin-top:8px;overflow:hidden;}
-  .xpbar i{display:block;height:100%;width:8%;background:var(--peri);border-radius:99px;}
-  .goal-card{margin-bottom:13px;}
-  .goal-card .row{display:flex;justify-content:space-between;font-size:12px;}
-  .goal-card .gt{font-weight:700;color:var(--peri);}
-  .goal-card .gmain{font-weight:600;font-size:13px;margin-top:3px;}
-  .applock{display:flex;align-items:center;gap:11px;margin-bottom:auto;}
-  .applock .ic{width:38px;height:38px;border-radius:11px;background:var(--paper-2);display:flex;align-items:center;justify-content:center;flex:none;}
-  .applock .ic svg{width:18px;height:18px;}
-  .applock .at{font-weight:700;font-size:13px;}
-  .applock .as{font-size:11px;color:var(--ink-soft);}
-  .study-btn{background:var(--peri);color:#fff;text-align:center;font-weight:800;font-size:15px;border-radius:15px;padding:14px;margin:14px 0 12px;display:flex;align-items:center;justify-content:center;gap:7px;}
-  .tabbar{display:flex;justify-content:space-around;align-items:center;padding:11px 0 16px;border-top:1px solid var(--line);background:#fff;}
-  .tabbar .tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9px;color:var(--ink-soft);font-weight:600;}
-  .tabbar .tab.on{color:var(--peri);}
-  .tabbar .tab .b{width:34px;height:26px;border-radius:9px;display:flex;align-items:center;justify-content:center;}
-  .tabbar .tab.on .b{background:var(--peri);}
-  .tabbar .tab svg{width:16px;height:16px;}
-
-  /* quiz screen content */
-  .quiz-top{display:flex;justify-content:space-between;align-items:center;padding:8px 4px;}
-  .pill{background:var(--peri-soft);color:var(--peri-deep);font-weight:700;font-size:11px;padding:4px 10px;border-radius:99px;}
-  .qbar{height:5px;background:#eee;border-radius:99px;margin:4px 0 14px;overflow:hidden;}
-  .qbar i{display:block;height:100%;width:60%;background:var(--peri);}
-  .qcard{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px 16px;box-shadow:var(--shadow-card);margin-bottom:14px;}
-  .qlabel{font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--peri);}
-  .qtext{font-family:"Bricolage Grotesque";font-weight:800;font-size:19px;margin-top:6px;}
-  .opt{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:13px;padding:11px 12px;margin-bottom:9px;font-size:13px;font-weight:600;}
-  .opt .k{width:22px;height:22px;border-radius:50%;background:var(--paper-2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:none;}
-  .opt.correct{border-color:var(--success);background:rgba(39,192,107,.08);}
+  /* screen internals — rebuilt 2026-08-08 to match the real App Store
+     screens (01 = red lock screen, 02 = quiz), not a designer's guess */
+  .scr-pad{padding:6px 16px 0;flex:1;display:flex;flex-direction:column;}
+  .screen.quiz{background:#F5F5FB;}
+  .quiz-top{display:flex;justify-content:space-between;align-items:center;padding:8px 2px 10px;}
+  .quiz-top .x{font-weight:700;font-size:14px;color:var(--ink);}
+  .earnpill{display:flex;align-items:center;gap:5px;background:#DFF4E6;color:#1F9D55;font-weight:700;font-size:11px;padding:5px 11px;border-radius:99px;}
+  .prog-row{display:flex;align-items:center;gap:9px;margin-bottom:16px;}
+  .prog-row img{width:26px;height:26px;border-radius:7px;background:#fff;flex:none;}
+  .prog-row .bar{flex:1;height:8px;background:#E4E4F0;border-radius:99px;overflow:hidden;}
+  .prog-row .bar i{display:block;height:100%;width:20%;background:var(--peri);border-radius:99px;}
+  .prog-row .n{font-size:12px;font-weight:700;color:var(--ink-soft);}
+  .xp-chip{align-self:center;display:flex;align-items:center;gap:5px;background:var(--peri);color:#fff;font-weight:800;font-size:12px;padding:6px 15px;border-radius:99px;box-shadow:0 8px 22px -8px rgba(92,107,245,.55);position:relative;z-index:2;margin-bottom:-14px;}
+  .qcard{background:#fff;border:1px solid #ECECF4;border-radius:20px;padding:24px 16px 18px;box-shadow:var(--shadow-card);margin-bottom:16px;text-align:center;}
+  .qlabel{font-size:10px;font-weight:800;letter-spacing:.14em;color:var(--peri);}
+  .qtext{font-family:"Bricolage Grotesque";font-weight:800;font-size:17px;margin-top:6px;line-height:1.3;}
+  .opt{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #ECECF4;border-radius:14px;padding:11px 12px;margin-bottom:9px;font-size:13px;font-weight:600;color:#B9BAC9;}
+  .opt .k{width:22px;height:22px;border-radius:50%;background:#F1F1F7;color:#B9BAC9;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:none;}
+  .opt.correct{border-color:var(--success);background:#F1FBF4;color:var(--ink);font-weight:700;}
   .opt.correct .k{background:var(--success);color:#fff;}
-
+  .nice-bar{margin:auto 0 14px;background:#DFF4E6;color:#1F9D55;text-align:center;font-weight:800;font-size:14px;border-radius:15px;padding:13px;}
+  /* the red lock screen */
+  .screen.lock{background:#F2230E;align-items:center;justify-content:center;gap:14px;}
+  .screen.lock .statusbar{position:absolute;top:0;left:0;right:0;color:#fff;}
+  .screen.lock .statusbar .icons i{border-color:#fff;}
+  .screen.lock img{width:112px;display:block;border-radius:8px;}
+  .locktitle{color:#fff;font-family:"Bricolage Grotesque";font-weight:800;font-size:24px;letter-spacing:.06em;}
   /* ---------- section shells ---------- */
   section{padding:5.5rem 0;}
   .eyebrow{font-weight:800;font-size:.82rem;letter-spacing:.16em;text-transform:uppercase;color:var(--peri);margin-bottom:.9rem;}
@@ -314,64 +300,36 @@
       </div>
     </div>
 
-    <!-- phone mockups -->
+    <!-- phone mockups — mirror the real App Store screens -->
     <div class="phones">
-      <!-- BACK phone: quiz -->
+      <!-- BACK phone: the lock screen students actually hit -->
       <div class="phone back">
         <div class="island"></div>
-        <div class="screen">
+        <div class="screen lock">
           <div class="statusbar"><span>9:41</span><div class="icons"><i></i></div></div>
-          <div class="scr-pad">
-            <div class="quiz-top"><span style="font-weight:700;font-size:13px;">✕</span><span class="pill">🔒 5 left</span></div>
-            <div class="qbar"><i></i></div>
-            <div class="qcard">
-              <div class="qlabel">QUESTION</div>
-              <div class="qtext">Which word means “tomorrow”?</div>
-            </div>
-            <div class="opt"><span class="k">A</span> Hoy</div>
-            <div class="opt"><span class="k">B</span> Ayer</div>
-            <div class="opt correct"><span class="k">✓</span> Mañana</div>
-            <div class="opt"><span class="k">D</span> Ahora</div>
-          </div>
+          <img src="img/locky-red.png" alt="Locky, the QuizLocky mascot, on the red lock screen">
+          <div class="locktitle">STUDY TIME</div>
         </div>
       </div>
 
-      <!-- FRONT phone: home -->
+      <!-- FRONT phone: the quiz that unlocks your apps -->
       <div class="phone front">
         <div class="island"></div>
-        <div class="screen">
+        <div class="screen quiz">
           <div class="statusbar"><span>9:41</span><div class="icons"><i></i></div></div>
           <div class="scr-pad">
-            <div class="greet">Good evening</div>
-            <div class="scr-h1">Let's focus</div>
-
-            <div class="card-mini level-card">
-              <!-- LOCKY (swap for your real PNG for best results) -->
-              <div class="lk" aria-hidden="true"><svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;"><defs><linearGradient id="lb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6E7BFF"/><stop offset="1" stop-color="#5260F0"/></linearGradient></defs><path d="M62 84 V60 a38 38 0 0 1 76 0 V84" fill="none" stroke="#C9CDDB" stroke-width="17" stroke-linecap="round"/><path d="M62 84 V60 a38 38 0 0 1 76 0 V84" fill="none" stroke="#9AA0B8" stroke-width="6" stroke-linecap="round" opacity=".5"/><rect x="40" y="78" width="120" height="118" rx="30" fill="url(#lb)"/><rect x="40" y="78" width="120" height="118" rx="30" fill="#fff" opacity=".10"/><g transform="translate(0,2)"><ellipse cx="78" cy="128" rx="22" ry="22" fill="#fff"/><ellipse cx="122" cy="128" rx="22" ry="22" fill="#fff"/><circle cx="78" cy="128" r="20" fill="none" stroke="#1B2147" stroke-width="5"/><circle cx="122" cy="128" r="20" fill="none" stroke="#1B2147" stroke-width="5"/><line x1="98" y1="124" x2="102" y2="124" stroke="#1B2147" stroke-width="5"/><circle cx="80" cy="130" r="7.5" fill="#1B2147"/><circle cx="124" cy="130" r="7.5" fill="#1B2147"/><circle cx="83" cy="127" r="2.4" fill="#fff"/><circle cx="127" cy="127" r="2.4" fill="#fff"/></g><path d="M86 160 q14 12 28 0" fill="none" stroke="#1B2147" stroke-width="5" stroke-linecap="round"/><rect x="92" y="176" width="16" height="20" rx="6" fill="#2C336A"/><g transform="rotate(-12 100 56)"><polygon points="100,30 158,52 100,74 42,52" fill="#1A1A2E"/><polygon points="100,46 128,57 100,68 72,57" fill="#11111F"/><line x1="150" y1="55" x2="150" y2="78" stroke="#FFB020" stroke-width="3.5" stroke-linecap="round"/><circle cx="150" cy="80" r="5" fill="#FFB020"/></g><rect x="20" y="120" width="20" height="40" rx="10" fill="#5260F0"/><rect x="160" y="120" width="20" height="40" rx="10" fill="#5260F0"/><rect x="62" y="196" width="22" height="30" rx="11" fill="#5260F0"/><rect x="116" y="196" width="22" height="30" rx="11" fill="#5260F0"/></svg></div>
-              <div>
-                <div class="lv-label">Level 1</div>
-                <div class="lv-title">Lock Rookie</div>
-                <div class="xpbar"><i></i></div>
-              </div>
+            <div class="quiz-top"><span class="x">✕</span><span class="earnpill">⏱ Earning +20 min</span></div>
+            <div class="prog-row"><img src="img/locky-mini.png" alt=""><div class="bar"><i></i></div><span class="n">1/5</span></div>
+            <div class="xp-chip">⚡ +16 XP</div>
+            <div class="qcard">
+              <div class="qlabel">QUESTION</div>
+              <div class="qtext">What is the main function of the mitochondria?</div>
             </div>
-
-            <div class="card-mini goal-card">
-              <div class="row"><span class="gt">◎ Today's goal</span><span style="color:var(--ink-soft)">0 / 1</span></div>
-              <div class="gmain">Clear 1 deck to keep your streak.</div>
-            </div>
-
-            <div class="card-mini applock">
-              <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="#5C6BF5" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
-              <div><div class="at">Choose apps to lock</div><div class="as">Pick the apps that distract you</div></div>
-            </div>
-
-            <div class="study-btn"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" style="width:16px;height:16px;"><path d="M8 11V8a4 4 0 0 1 8 0"/><rect x="5" y="11" width="14" height="10" rx="2"/></svg> Study to Unlock</div>
-          </div>
-          <div class="tabbar">
-            <div class="tab on"><span class="b"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></span>Home</div>
-            <div class="tab"><span class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg></span>Decks</div>
-            <div class="tab"><span class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="3"/></svg></span>Coach</div>
-            <div class="tab"><span class="b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></span>Stats</div>
+            <div class="opt"><span class="k">A</span> Protein synthesis</div>
+            <div class="opt"><span class="k">B</span> Storing waste</div>
+            <div class="opt correct"><span class="k">✓</span> Producing energy (ATP)</div>
+            <div class="opt"><span class="k">D</span> Cell division</div>
+            <div class="nice-bar">✓ Nice one.</div>
           </div>
         </div>
       </div>
